@@ -1,0 +1,132 @@
+{% extends 'mcl/base.html' %}{% load site_settings_tags %} {% load static %}
+{% block title %}Report Results{%endblock%}
+{% block content %}
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Download Images</h1>
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="{% url 'mcl:dashboard' %}">Home</a></li>
+              <li class="breadcrumb-item active">Report Results</li>
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <div class="content">
+      <div class="container">
+        <div class="row mb-2">
+          <div class="col-12 card">
+            <div class="card-header">
+            </div>
+            <div class="card-body">
+              <div class="col-md-12">
+
+                {% if messages %}
+                <div class="row">
+                  <div class="col-md-12">
+                    {% for message in messages %}
+                    <div class="alert alert-{% if message.tags %}{{ message.tags }} {% endif %}" role="alert">
+                      <p class="mb-0 text-center">{{ message }}</p>
+                    </div>
+                    {% endfor %}
+                  </div>
+                </div>
+                {% endif %}
+              <!-- Content start -->
+              
+              <h1>Download All Images from here</h1>
+              <!-- <article>
+                <dl>                  
+                  <dt>
+                    <i class="fas fa-file-download"></i> 
+                    <span class="badge bg-warning">
+                      Download Sample Topic Images 
+                    </span> 
+                    <button class="btn btn-sm btn-outline-info ml-2 font-weight-bold"
+                            id="downzipimages"
+                            title="Download Checklist Entry Images">
+                        <i class="fas fa-download"></i> 
+                        <a href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}/media/download/{{ topic_image_filename }}" download>
+                          Download
+                        </a>
+                    </button>
+                  </dt>
+                  <dd>(Download all Sample Topic Images file from here)</dd>
+                </dl>
+              </article> -->
+
+              <!-- sample_topic_images -->
+              <form method="POST" action="{% url 'mcl:download_images' %}" id="sample_topic_images">
+                {% csrf_token %}
+                  <input type="hidden" name="sample_topic_images" value="sample_topic_images">
+                  <i class="fas fa-file-download"></i> 
+                  <span class="badge bg-warning">
+                    Download Sample Topic Images 
+                  </span>
+                  <button type="submit" 
+                          class="btn btn-sm btn-outline-info ml-2 font-weight-bold" 
+                          title="Download Checklist Entry Images">
+                      <i class="fas fa-download"></i>  
+                      Download
+                  </button>
+                  <div class="mt-4 text-danger" id="submittingMessage1" style="display: none; font-size: 24px;"><i class="fas fa-cog fa-spin"></i>Downloading Sample Topic images, please wait...</div>
+              </form>
+              <br>
+
+              <!-- checklist_entry_images -->
+              <form method="POST" action="{% url 'mcl:download_images' %}" id="checklist_entry_images">
+                {% csrf_token %}
+                  <input type="hidden" name="checklist_entry_images" value="checklist_entry_images">
+                  <i class="fas fa-file-download"></i> 
+                  <span class="badge btn-danger">
+                    Download Checklist Entry Images 
+                  </span>
+                  <button type="submit" 
+                          class="btn btn-sm btn-outline-info ml-2 font-weight-bold" 
+                          title="Download Checklist Entry Images">
+                      <i class="fas fa-download"></i>  
+                      Download
+                  </button>
+                  <div class="mt-4 text-danger" id="submittingMessage2" style="display: none; font-size: 24px;"><i class="fas fa-cog fa-spin"></i>Downloading Checklist Entry images, please wait...</div>
+              </form>
+
+              <!-- Content end -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /.content -->
+</div>
+  <!-- /.content-wrapper -->
+{% endblock %}
+{% block extra_js %} 
+<script>
+  // document.getElementById('checklist_entry_images').addEventListener('submit', function() {
+  //     document.getElementById('submittingMessage1').style.display = 'block';
+      
+  //     setTimeout(function() {
+  //         document.getElementById('submittingMessage1').style.display = 'none';
+  //     }, 2000); // Adjust the delay time in milliseconds (here, 5000 ms or 5 seconds)
+  // });
+
+  document.getElementById('checklist_entry_images').addEventListener('submit', function() {
+      document.getElementById('submittingMessage2').style.display = 'block';
+      
+      setTimeout(function() {
+          document.getElementById('submittingMessage2').style.display = 'none';
+      }, 10000); // Adjust the delay time in milliseconds (here, 5000 ms or 5 seconds)
+  });
+</script>
+{% endblock %}

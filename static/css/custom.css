@@ -1,0 +1,62 @@
+@media (max-width: 544px) {  
+  .survey-form-td {
+    font-size:12px !important;
+  }
+}
+ 
+
+table.table thead th.orderable {
+  text-transform: capitalize;
+  background: url('../img/sort_both.png') no-repeat center right;
+}
+
+table.table thead th.asc.orderable {
+  background: url('../img/sort_asc.png') no-repeat center right;
+}
+
+table.table thead th.desc.orderable {
+  background: url('../img/sort_desc.png') no-repeat center right;
+}
+
+.check-list {
+  background-color: #c4c3c3 !important;
+  color: #221f1f !important;
+  border-radius: 5px;
+  text-align: center;
+  font-size: small;
+}
+
+.searchclear {
+  position: absolute;
+  right: 10px;
+  top: 0;
+  bottom: 0;
+  height: 14px;
+  margin: auto;
+  font-size: 14px;
+  cursor: pointer;
+  color: #dc3545;
+}
+
+.alert-dismissible {
+  padding-right: 0 !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+  margin-top: -8px;
+}
+
+.dash-donut-chart {
+  min-height: 250px;
+  height: 250px;
+  max-height: 250px;
+  max-width: 100%;
+  display: block;
+  width: 487px;
+}
+
+.entry-card-bg {
+  background-color: #061222 !important;
+}
+
+

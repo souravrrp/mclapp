@@ -1,0 +1,134 @@
+{% extends 'mcl/base.html' %}{% load site_settings_tags %} {% load static %}
+{% block title %}Report Results{%endblock%}
+{% block content %}
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Report Results</h1>
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="{% url 'mcl:dashboard' %}">Home</a></li>
+              <li class="breadcrumb-item active">Report Results</li>
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <div class="content">
+      <div class="container">
+        <div class="row mb-2">
+          <div class="col-12 card">
+            <div class="card-header">
+              <button class="btn btn-md btn-danger ml-2 font-weight-bold" onClick="window.location.href = '{% url 'mcl:report' %}';" title="New Search">
+                <i class="fas fa-sync"></i> New Search
+              </button>
+            </div>
+            <div class="card-body">
+              <div class="col-md-12">
+
+                {% if messages %}
+                <div class="row">
+                  <div class="col-md-12">
+                    {% for message in messages %}
+                    <div class="alert alert-{% if message.tags %}{{ message.tags }} {% endif %}" role="alert">
+                      <p class="mb-0 text-center">{{ message }}</p>
+                    </div>
+                    {% endfor %}
+                  </div>
+                </div>
+                {% endif %}
+              <!-- Content start -->
+              <div class="callout callout-info table-responsive">
+                <h5>Search Criteria</h5>
+                <span>
+                  <b>Date Range:</b> <span class="badge bg-warning"> {{ form_date }} - {{ to_date }}</span>
+                  <b>Areas:</b> <span class="badge bg-warning">{{ area_code }}</span>
+                  <b>Districts:</b> <span class="badge bg-warning">{{ district_code }}</span>
+                  <b>Sites:</b> <span class="badge bg-warning">{{ shop_code }}</span>
+                  <b>Report Name:</b>
+                  <span class="badge bg-warning">
+                  {% if option == "tot_sum_rep" %}Total Summary Report{% endif %}
+                  {% if option == "area_sub_rep" %}Area Submission Report{% endif %}
+                  {% if option == "dist_sub_rep" %}District Submission Report{% endif %}
+                  {% if option == "checklist_entry_images" %}Checklist Entry Images{% endif %}
+                  </span>
+                </span>
+              </div>
+              
+              <div class="table-responsive table-striped mt-4 mb-2 text-center">
+                  {% if "No data found !" in df %}
+                    <h4 class="text-red">No data found !</h4>
+                    <button class="btn btn-md btn-danger ml-2 font-weight-bold" onClick="window.location.href = '{% url 'mcl:report' %}';" title="New Search">
+                      <i class="fas fa-sync"></i> New Search
+                    </button>
+                  {% else %}
+                  <h4>Your requested report generated total: 
+                    <span class="badge bg-danger">{{ row_count }}</span> rows.
+                  </h4>
+                  
+                  {% if row_count < 1100 %}
+                    <button class="btn btn-md btn-primary ml-2 font-weight-bold" id="csvTablebtn" data-toggle="modal" data-target="#view-report-modal-xl" title="View Report">
+                      <i class="fas fa-th"></i> Preview Report
+                    </button>
+                  {% else %}
+                    <button class="btn btn-md btn-primary ml-2 font-weight-bold" title="*Preview report is disabled for large report." disabled>
+                      <i class="fas fa-th"></i> Preview Report
+                    </button>
+                  {% endif %}
+
+                  <button class="btn btn-md btn-success ml-2 font-weight-bold" onClick="window.location.href = '{{ request.scheme }}://{{ request.META.HTTP_HOST }}{{ csv_file }}';" title="Download CSV">
+                    <i class="fas fa-download"></i> Download CSV
+                  </button>
+
+                  {% if row_count > 1100 %}
+                    <h6 class="mt-2 text-danger">*Preview report is disabled for large report.</h6>
+                  {% endif %}
+
+                  <!-- View Report -->
+                  <div class="modal fade" id="view-report-modal-xl" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-xl" role="document">
+                      <div class="modal-content table-responsive">
+                        <div class="modal-header">
+                            <button class="btn btn-md btn-success ml-2 font-weight-bold" onClick="window.location.href = '{{ request.scheme }}://{{ request.META.HTTP_HOST }}{{ csv_file }}';" title="Download CSV">
+                              <i class="fas fa-download"></i> Download CSV
+                            </button>
+                          <button type="button" class="close text-danger" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+                        <div class="table table-hover table-bordered table-sm text-xs" id="CSVTable"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- View Report end -->
+
+                {% endif %}
+              </div>
+              <!-- Content end -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /.content -->
+</div>
+  <!-- /.content-wrapper -->
+{% endblock %}
+{% block extra_js %} 
+<script src="{% static 'js/jquery.csvToTable.js' %}"></script>
+<script>
+  $("#csvTablebtn").click(function(){
+    $('#CSVTable').CSVToTable('{{ request.scheme }}://{{ request.META.HTTP_HOST }}{{ csv_file }}');
+    $("#CSVTable").focus();
+  });
+</script>
+{% endblock %}

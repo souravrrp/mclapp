@@ -1,0 +1,81 @@
+{% extends 'mcl/base.html' %}
+{% load crispy_forms_tags %}
+{% block title %}User Update{%endblock%}
+{% block content %}
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">User Update</h1>
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="{% url 'mcl:dashboard' %}">Home</a></li>
+              <li class="breadcrumb-item"><a href="#">Settings</a></li>
+              <li class="breadcrumb-item active">User Update</li>
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <div class="content">
+      <div class="container">
+        <div class="row mb-2">
+          <div class="col-12 card">
+            <div class="card-header">
+              <h1 class="card-title">
+                User Update: <span class='badge badge-danger'>{{ obj.username }}</span>
+              </h1>
+            </div>
+            <div class="card-body">
+              {% if messages %}
+              <div class="row">
+                <div class="col-md-12">
+                  {% for message in messages %}
+                  <div class="alert alert-{% if message.tags %}{{ message.tags }} {% endif %}" role="alert">
+                    <p class="mb-0 text-center">{{ message }}</p>
+                  </div>
+                  {% endfor %}
+                </div>
+              </div>
+              {% endif %}
+              
+              <form method="POST">
+                {% csrf_token %}
+                {% crispy form %}
+                <hr>
+                <legend>User Profile</legend>
+                <hr>
+                  <div class="row">
+                    {{ formset.management_form|crispy }}
+                    {% for form in formset.forms %}
+                      {% for field in form.visible_fields %}
+                        {% if forloop.first %}
+                            {% for hidden in form.hidden_fields %}
+                              {{ hidden }}
+                            {% endfor %}
+                        {% endif %}
+                        {{ field.errors.as_ul }}
+                        <div class="col-6">
+                          {{ field|as_crispy_field }}
+                        </div>
+                      {% endfor %}
+                    {% endfor %}
+                  </div>
+                <input type="submit" value="Update" class="mt-2 btn btn-success">
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /.content -->
+</div>
+  <!-- /.content-wrapper -->
+{% endblock %}

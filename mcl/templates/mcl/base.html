@@ -1,0 +1,239 @@
+{% load static %}{% load site_settings_tags %}{% load active_link_tags %}<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %} {% endblock %} | {% site_title %}</title>
+
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="{% static 'plugins/fontawesome-free/css/all.min.css' %}">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="{% static 'css/adminlte.min.css' %}">
+  <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+  <link rel="stylesheet" href="{% static 'plugins/icheck-bootstrap/icheck-bootstrap.min.css' %}">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+<body class="hold-transition sidebar-mini">
+<div class="wrapper">
+
+  <!-- Navbar -->
+  <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+    <!-- Left navbar links -->
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+      </li>
+      <li class="nav-item d-none d-sm-inline-block">
+        {% url 'mcl:dashboard' as dashboard_url %}
+        <a href="{% url 'mcl:dashboard' %}" class="nav-link {% if request.path == dashboard_url %}active{% endif %}">Home</a>
+      </li>
+    </ul>
+    <!-- Right navbar links-->
+    <ul class="navbar-nav ml-auto">
+        <li class="nav-item dropdown user-menu">
+          <a href="{% url 'mcl:dashboard' %}" class="nav-link" aria-expanded="false">
+            <span class="d-none d-md-inline">Welcome, <b>{{ request.user }}</b></span>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link text-danger" href="{% url 'mcl:logout' %}" role="button"
+          onclick="if (confirm('Are you sure?')){return true;}else{event.stopPropagation(); event.preventDefault();};">
+            <i class="fas fa-sign-out-alt"></i> LOG OUT
+          </a>
+        </li>
+        
+    </ul>
+  </nav>
+  <!-- /.navbar -->
+
+  <!-- Main Sidebar Container -->
+  <aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+    <a href="{% url 'mcl:dashboard' %}" class="brand-link text-center">
+      <img src="{% static 'img/single_s_bg.png' %}" alt="{% site_name %}" class="brand-image img-circle elevation-3">
+      <span class="brand-text font-weight-light">{% site_name %}</span> 
+    </a>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+    <!-- Sidebar Menu -->
+      <nav class="mt-2">
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+          {% url 'mcl:dashboard' as dashboard_url %}  
+          <li class="nav-item">
+            <a href="{% url 'mcl:dashboard' %}" class="nav-link {% if request.path == dashboard_url %}active{% endif %}">
+              <i class="nav-icon fas fa-tachometer-alt text-success"></i>
+              <p>Dashboard</p>
+            </a>
+          </li>
+          <li class="nav-item menu-open">
+              <a href="#" class="nav-link {% if '/entry' in request.path %}active{% endif %}">
+                <i class="nav-icon fas fa-bars"></i>
+                <p>Check List
+                <i class="right fas fa-angle-left"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                <a href="{% url 'mcl:entry_otp' %}" class="nav-link {% active_link 'mcl:entry_otp || mcl:entry_add' %}">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Check List Entry</p>
+                </a>
+                </li>
+
+                <li class="nav-item">
+                  <a href="{% url 'mcl:entry_otp_bn' %}" class="nav-link {% active_link 'mcl:entry_otp_bn || mcl:entry_add_bn' %}">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Check List Entry <span class="badge bg-danger">বাংলা</span></p>
+                  </a>
+                  </li>
+                
+                <li class="nav-item">
+                <a href="{% url 'mcl:entry_list' %}" class="nav-link {% active_link 'mcl:entry_list' %}">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Entry List</p>
+                </a>
+                </li>
+              </ul>
+            </li>
+
+            <li class="nav-item menu-open">
+              <a href="#" class="nav-link {% active_link 'mcl:user_settings || mcl:change_password'%}">
+                <i class="fas fa-users-cog"></i>
+                <p>
+                User Settings
+                <i class="right fas fa-angle-left"></i>
+                </p>
+              </a>
+
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="{% url 'mcl:user_settings' %}" class="nav-link {% active_link 'mcl:user_settings' %}">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>User Settings</p>
+                  </a>
+                  </li>
+
+                <li class="nav-item">
+                <a href="{% url 'mcl:change_password' %}" class="nav-link {% active_link 'mcl:change_password' %}">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Change Password</p>
+                </a>
+                </li>
+              </ul>
+            </li>
+
+          {% if request.user.is_superuser or request.user.groups.all.0.name == 'Admin' %}
+            <li class="nav-item menu-open">
+            <a href="#" class="nav-link {% if '/area' in request.path %}active{% endif %} {% if '/site' in request.path %}active{% endif %}
+              {% if '/district' in request.path %}active{% endif %} {% if '/category' in request.path %}active{% endif %}
+              {% if '/topic' in request.path %}active{% endif %} {% if '/comment' in request.path %}active{% endif %}
+              {% if '/users' in request.path %}active{% endif %}">
+                <i class="nav-icon fas fa-cogs"></i>
+                <p>
+                Settings
+                <i class="right fas fa-angle-left"></i>
+                </p>
+              </a>
+
+              <ul class="nav nav-treeview">
+
+                <li class="nav-item">
+                  <a href="{% url 'mcl:site_settings' %}" class="nav-link {% active_link 'mcl:site_settings' %}">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Site Settings</p>
+                  </a>
+                </li>
+
+                <li class="nav-item">
+                  <a href="{% url 'mcl:report' %}" class="nav-link {% if '/report' in request.path %} active {% endif %}">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Report</p>
+                  </a>
+                </li>
+
+                <li class="nav-item">
+                  <a href="{% url 'mcl:users_list' %}" class="nav-link {% if '/users' in request.path %} active {% endif %}">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Users</p> <span class="float-right badge bg-danger">{% user_count %}</span>
+                  </a>
+                </li>
+
+                <li class="nav-item">
+                  <a href="{% url 'mcl:category_list' %}" class="nav-link {% if '/category' in request.path %} active {% endif %}">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Category</p> <span class="float-right badge bg-info">{% category_count %}</span>
+                  </a>
+                </li>
+
+                <li class="nav-item">
+                  <a href="{% url 'mcl:topic_list' %}" class="nav-link {% if '/topic' in request.path %} active {% endif %}">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Topic</p> <span class="float-right badge bg-success">{% topic_count %}</span>
+                  </a>
+                </li>
+
+                <li class="nav-item">
+                  <a href="{% url 'mcl:comment_list' %}" class="nav-link {% if '/comment' in request.path %} active {% endif %}">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Comment</p> <span class="float-right badge bg-warning">{% comment_count %}</span>
+                  </a>
+                </li>
+
+                <li class="nav-item">
+                <a href="{% url 'mcl:area_list' %}" class="nav-link {% if '/area' in request.path %} active {% endif %}">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Area</p> <span class="float-right badge bg-danger">{% area_count %}</span>
+                </a>
+                </li>
+
+                <li class="nav-item">
+                  <a href="{% url 'mcl:district_list' %}" class="nav-link {% if '/district' in request.path %} active {% endif %}">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>District</p> <span class="float-right badge bg-warning">{% district_count %}</span>
+                  </a>
+                  </li>
+
+                <li class="nav-item">
+                  <a href="{% url 'mcl:site_list' %}" class="nav-link {% if '/site' in request.path %} active {% endif %}">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Site</p> <span class="float-right badge bg-success">{% site_count %}</span>
+                  </a>
+                  </li>
+
+              </ul>
+            </li>
+          {% endif %}
+        </ul>
+      </nav>
+      <!-- /.sidebar-menu -->
+    </div>
+    <!-- /.sidebar -->
+  </aside>
+  {% block content %}
+  {% endblock %}
+<!-- Main Footer -->
+  <footer class="main-footer">
+    <strong>Copyright &copy; 2022 - {% now "Y" %}<a href="#"> {% site_name %}</a>.</strong> All rights reserved.
+  </footer>
+</div>
+<!-- ./wrapper -->
+
+<!-- REQUIRED SCRIPTS -->
+
+<!-- jQuery -->
+<script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+<!-- Bootstrap 4 -->
+<script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<!-- AdminLTE App -->
+<script src="{% static 'js/adminlte.min.js' %}"></script>
+<script src="{% static 'js/custom.js' %}"></script>
+
+{% block extra_js %}
+{% endblock %}
+</body>
+</html>

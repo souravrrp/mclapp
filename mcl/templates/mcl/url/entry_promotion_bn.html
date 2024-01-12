@@ -1,0 +1,380 @@
+{% extends 'mcl/base.html' %}
+{% block title %}Check List Entry{%endblock%}
+{% load static %}
+{% block content %}
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Check List Entry <span class="badge bg-danger">বাংলা</span></h1>
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="{% url 'mcl:dashboard' %}">Home</a></li>
+              <li class="breadcrumb-item">Check List</li>
+              <li class="breadcrumb-item active">Check List Entry <span class="badge bg-danger">বাংলা</span></li>
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <div class="content">
+      <div class="container">
+        <div class="row mb-2">
+          <div class="col-12 card">
+            <div class="card-body">
+              <div class="col-md-12">
+                {% if messages %}
+                <div class="row">
+                  <div class="col-md-12">
+                    {% for message in messages %}
+                    <div class="alert alert-{% if message.tags %}{{ message.tags }} {% endif %}" role="alert">
+                      <p class="mb-0 text-center">{{ message }}</p>
+                    </div>
+                    {% endfor %}
+                  </div>
+                </div>
+              {% endif %}
+               <!-- Form start-->
+               <div class="row">
+                <div class="col-12 col-sm-4">
+                  <div class="info-box text-bg-light mt-0">
+                    <div class="info-box-content">
+                      <span class="badge bg-secondary">Site</span>
+                      <span class="info-box-number text-center text-sm">
+                        Site: {{ site.code }} ({{ site.manager.first_name }} {{ site.manager.last_name }})
+                      </span>
+                      <span class="info-box-number text-center text-sm">
+                        Area: {{ site.district.area.name }} (D-{{ site.district }})
+                      </span>
+                      <span class="info-box-number text-center text-sm mb-0">
+                        Address: {{ site.address }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-sm-4">
+                  <div class="info-box text-bg-light mt-0">
+                    <div class="info-box-content">
+                      <span class="badge bg-secondary">Visitor</span>
+                      <span class="info-box-number text-center text-sm">
+                        Date # {% now "jS F Y H:i A" %}
+                      </span>
+                      <span class="info-box-number text-center text-sm">
+                         Name: {{ request.user.first_name }} {{ request.user.last_name }} ({{ request.user.username }})
+                      </span>
+                      <span class="info-box-number text-center text-sm mb-0">
+                        Designation: {{ request.user.profile.designation }}
+                     </span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-sm-4">
+                  <div class="info-box text-bg-light mt-0">
+                    <div class="info-box-content">
+                      <span class="badge bg-secondary">Score</span>
+                      <span class="info-box-number text-center text-sm">
+                        <!-- পয়েণ্ট: O = বিচারের অযোগ্য, ১ = ন্যুনতম মান অর্জিত,
+                        ২ = খুব ভালো, ১ = প্রযোজ্য নয় (প্র/ন), O= অংশগ্রহণ করেনি -->
+                        পয়েন্ট: ৫ = চমৎকার, ৪ = খুব ভাল, ৩ = ভাল, ২= সাধারণ, ১ = খারাপ
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+               <form method ="POST" enctype="multipart/form-data" id="entry_add">
+                {% csrf_token %}
+                {% regroup topics by category as topic_list %}
+                <div class="table-responsive mt-4">
+                    <table class="table table-striped table-hover table-bordered table-sm">
+                        <thead>
+                        {% for topic in topic_list %}
+                            <tr class="check-list survey-form-td">
+                                <th style="width: 14%">{{ forloop.counter }}# {{ topic.grouper.name_bn }}</th>
+                                <th style="width: 36%">বিষয়</th>
+                                <!-- <th style="width: 30%">মতামত</th> -->
+                                <th style="width: 30%">ছবি তুলুন</th>
+                                <th style="width: 30%">নমুনা চিত্র</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for item in topic.list %}
+                        <tr>
+                            <th class="survey-form-td">{{ forloop.counter}}</th>
+                            <td class="survey-form-td text-sm">{{ item.name_bn }}</td>
+                            <!-- <td>
+                              <select id="select" name="qs{{ item.id }}" class="custom-select survey-form-td text-sm" required>
+                                <option value="">নির্বাচন করুন...</option>
+                                <option value="A">বিচারের অযোগ্য</option>
+                                <option value="B">ন্যূনতম মান অর্জিত</option>
+                                <option value="C">খুব ভালো</option>
+                                <option value="D">প্রযোজ্য নয় (প্র/ন)</option>
+                                <option value="E">অংশগ্রহণ করেনি</option>
+                              </select>
+                            </td> -->
+                            <td>                           
+                              <img id="myimage{{ forloop.counter }}#{{ topic.grouper }}" width="40" class="rounded float-left">
+                              <label for="topicimages{{ forloop.counter }}# {{ topic.grouper }}" class="capture-button">
+                                  <img src="{% static 'img/topic_image.png' %}" alt="Capture Image" id="captureImage{{ forloop.counter }}# {{ topic.grouper }}" width="60" height="60" class="brand-image img-circle elevation-3">
+                              </label>
+                              <input type="file" id="topicimages{{ forloop.counter }}# {{ topic.grouper }}" name="topicimages" accept="image/*" capture="camera" style="display: none;" onchange="readURL(this, 'myimage{{ forloop.counter }}#{{ topic.grouper }}', 'fileSelectedText{{ forloop.counter }}#{{ topic.grouper }}');" multiple required>
+                              <p id="fileSelectedText{{ forloop.counter }}# {{ topic.grouper }}"></p>
+                          </td>
+                          <td>
+                            {% if item.sample_image %}
+                              <a href="#" data-toggle="modal" data-target="#topicImageModal{{ item.id }}">
+                                <img src="/media/{{ item.sample_image }}" width="60" class="img-thumbnail">
+                              </a>
+                                      
+                              <!-- Modal -->
+                              <div class="modal fade" id="topicImageModal{{ item.id }}" tabindex="-1" role="dialog" aria-labelledby="topicImageModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="topicImageModalLabel">বিষয়: {{ item.name_bn }}</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <img class="img-fluid" src="/media/{{ item.sample_image }}" alt="Topic Image">
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                                        </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              <!-- Modal End -->
+                              {% else %}
+                                
+                                <a href="#" data-toggle="modal" data-target="#SampleImageModal">
+                                  <img src="{% static 'img/sample_image.jpeg' %}" width="60" class="img-thumbnail">
+                                </a>
+
+                                <!-- Modal -->
+                                <div class="modal fade" id="SampleImageModal" tabindex="-1" role="dialog" aria-labelledby="topicImageModalLabel" aria-hidden="true">
+                                  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                                      <div class="modal-content">
+                                          <div class="modal-header">
+                                              <h5 class="modal-title" id="topicImageModalLabel">বিষয়: {{ item.name_bn }}</h5>
+                                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                  <span aria-hidden="true">&times;</span>
+                                              </button>
+                                          </div>
+                                          <div class="modal-body">
+                                              <img class="img-fluid" src="{% static 'img/sample_image.jpeg' %}" alt="Topic Image">
+                                          </div>
+                                          <div class="modal-footer">
+                                              <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                                          </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                <!-- Modal End -->
+                              {% endif %}
+                            </td>
+                          </tr>
+                        {% endfor %}
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                  <div class="mt-3"></div>
+                  <div class="row">
+                    <!-- <div class='col-md-6 form-group text-sm'>
+                      <label for="com_one">মন্তব্য ১</label>
+                      <select name="com_one" class="custom-select survey-form-td">
+                        <option value="" selected>Select...</option>
+                        {% for com in comments %}
+                        <option value="{{ com.comment }}">{{ com.comment }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                  
+                    <div class='col-md-6 form-group text-sm'>
+                      <label for="com_two">মন্তব্য ২</label>
+                      <select name="com_two" class="custom-select survey-form-td">
+                        <option value="" selected>Select...</option>
+                        {% for com in comments %}
+                        <option value="{{ com.comment }}">{{ com.comment }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+
+                    <div class='col-md-6 form-group text-sm'>
+                      <label for="com_three">মন্তব্য ৩</label>
+                      <select name="com_three" class="custom-select survey-form-td">
+                        <option value="" selected>Select...</option>
+                        {% for com in comments %}
+                        <option value="{{ com.comment }}">{{ com.comment }}</option>
+                        {% endfor %}
+                      </select>
+                    </div> -->
+ 
+                  <div class="col-md-6 form-group text-sm">
+                      <label>কাস্টম মন্তব্য</label>
+                      <textarea class="form-control" name="cust_comm" rows="1" maxlength="400"></textarea>
+                      <span class="help-block">
+                        Maximum 400 characters
+                     </span>
+                  </div>
+                </div><!-- Row end-->
+                  <!-- <div class="form-group">
+                      <div class="alert alert-danger d-none" id="file-msg" role="alert">
+                        <p class="mb-0 text-center">Selected image type not allowed, please select allowed image type!</p>
+                      </div>
+                    <label class="text-sm">ইমেজ</label>
+                    <p>
+                      <span class="badge badge-primary">JPG</span> <span class="badge badge-warning">JPEG</span>
+                      <span class="badge badge-success">GIF</span> <span class="badge badge-danger">PNG</span>
+                    </p>
+                    <input class="form-control" name="images" type="file" id="imageupload" onchange="checkextension()" accept="image/*" multiple>
+                  </div> -->
+                  <div class="button text-center">
+                    <button type="submit" class="btn btn-danger mb-2" id="submit">Submit</button>
+                  </div>
+                  <div class="mt-4 text-danger" id="submittingMessage" style="display: none; font-size: 24px;"><i class="fas fa-cog fa-spin"></i>জমা দেওয়া হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন...</div>
+                </form>
+               <!-- Form end-->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /.content -->
+</div>
+  <!-- /.content-wrapper -->
+{% endblock %}
+
+{% block extra_js %}
+<!-- <script>
+function checkextension() {
+  var file = document.querySelector("#imageupload");
+  var fileMsg = document.getElementById("file-msg");
+  if ( /\.(jpe?g|png|gif)$/i.test(file.files[0].name) === false )
+    { 
+      document.getElementById('imageupload').value= null;
+      fileMsg.classList.add("d-block");
+    }
+    else{
+      fileMsg.classList.remove("d-block");
+    }
+}
+</script> -->
+<script>
+  function checkImagesFilled() {
+    const inputs = document.querySelectorAll('[id^="topicimages"]');
+    let isImageMissing = false;
+
+    inputs.forEach(input => {
+      if (input.files.length === 0) {
+        isImageMissing = true;
+      }
+    });
+
+    return isImageMissing;
+  }
+
+  // document.getElementById('submit').addEventListener('click', function(event) {
+  //   if (checkImagesFilled()) {
+  //     event.preventDefault();
+  //     alert('জমা দেওয়ার আগে সমস্ত বিষয়ের জন্য ছবি তুলুন ।');
+  //   } else {
+  //     // Form can be submitted since all images are captured.
+  //     // Optionally, you can show a "Submitting..." message here before the form is submitted.
+  //     // For example, you can show a message like "Submitting, please wait...".
+  //   }
+  // });
+  document.getElementById('submit').addEventListener('click', function(event) {
+    const submittingMessage = document.getElementById('submittingMessage');
+    const submitButton = document.getElementById('submit');
+
+    if (checkImagesFilled()) {
+      event.preventDefault();
+      alert('জমা দেওয়ার আগে সমস্ত বিষয়ের জন্য ছবি তুলুন ।');
+    } else {
+      // Show the "Submitting..." message
+      submittingMessage.style.display = 'block';
+      submitButton.style.display = 'none';
+
+      // Optionally, you can add some delay to simulate the submission process
+      // and then submit the form after a short delay.
+      // For example, you can use the setTimeout function:
+      setTimeout(function() {
+        document.getElementById('entry_add').submit();
+      }, 2000); // Submit the form after a 2-second delay (you can adjust the delay as needed)
+    }
+  });
+</script>
+<script>
+  const inputs = document.querySelectorAll('[id^="topicimages"]');
+
+  inputs.forEach(input => {
+    const id = input.id;
+    const label = document.querySelector(`[for="${id}"]`);
+    const fileSelectedText = document.getElementById('fileSelectedText' + id);
+
+    input.style.display = 'none';
+
+    // Show the alert when the label is clicked
+    label.addEventListener('click', () => {
+      if (label.textContent === `একটি ছবি তোলা হয়েছে ৷`) {
+        alert('আপনার ইতিমধ্যে একটি ছবি তোলা হয়েছে ৷ অন্য ছবি নির্বাচন করুন ৷');
+      }
+    });
+
+    input.addEventListener('change', () => {
+      if (input.files.length > 0) {
+        label.textContent = `একটি ছবি তোলা হয়েছে ৷`;
+        fileSelectedText.textContent = 'Selected File: ' + input.files[0].name;
+      } else {
+        
+        // Show a pop-up message
+        alert('আপনার তোলা ছবিটি অনির্বাচিত করেছেন ৷ অনুগ্রহ করে ছবি তুলুন ৷');
+        
+        label.textContent = 'অনুগ্রহ করে ছবি তুলুন ৷';
+        fileSelectedText.textContent = '';
+      }
+    });
+  });
+</script>
+<script>
+  function readURL(input, imageId, textId) {
+      const imgElement = document.getElementById(imageId);
+      const fileSelectedText = document.getElementById(textId);
+  
+      if (input.files && input.files.length > 0) {
+          imgElement.style.display = 'block';  // Show the image element
+  
+          // Clear existing image source
+          imgElement.src = '';
+  
+          for (let i = 0; i < input.files.length; i++) {
+              const reader = new FileReader();
+  
+              reader.onload = function (e) {
+                  // Set the source of the image element
+                  imgElement.src = e.target.result;
+              };
+  
+              reader.readAsDataURL(input.files[i]);
+          }
+  
+          // Display the selected file names
+          //fileSelectedText.textContent = 'Selected File(s): ' + Array.from(input.files).map(file => file.name).join(', ');
+      } else {
+          // Hide the image element and clear file selected text
+          imgElement.style.display = 'none';
+          fileSelectedText.textContent = '';
+      }
+  }
+  </script>
+{% endblock %}

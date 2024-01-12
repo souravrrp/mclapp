@@ -1,0 +1,79 @@
+{% extends 'mcl/base.html' %}
+{% load django_tables2 %}
+{% load widget_tweaks %}
+{% block title %}Comment List{%endblock%}
+{% block content %}
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Comment List</h1>
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="{% url 'mcl:dashboard' %}">Home</a></li>
+              <li class="breadcrumb-item">Settings</li>
+              <li class="breadcrumb-item active">Comment List</li>
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <div class="content">
+      <div class="container">
+        <div class="row mb-2">
+          <div class="col-12 card">
+            <div class="card-header">
+              <h1 class="card-title">Comment List <a href="{%url 'mcl:comment_add' %}" class="ml-5 btn btn-success btn-md active" role="button" aria-pressed="true">
+                Add Comment
+              </a></h1>
+              <div class="card-tools">
+                
+                <form action="" method="get">
+                  <div class="btn-group">
+                    {% render_field filter.form.q class="form-control float-right searchinput" id="searchinput" placeholder="Search"%}
+                    <span id="searchclear" class="searchclear fas fa-times"></span>
+                  </div>
+                  <button type="submit" class="ml-2 btn btn-primary">
+                    <i class="fas fa-search"></i>
+                  </button>
+                </form>
+                
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="col-md-12">
+
+                {% if messages %}
+                <div class="row">
+                  <div class="col-md-12">
+                    {% for message in messages %}
+                    <div class="alert alert-{% if message.tags %}{{ message.tags }} {% endif %}" role="alert">
+                      <p class="mb-0 text-center">{{ message }}</p>
+                    </div>
+                    {% endfor %}
+                  </div>
+                </div>
+                {% endif %}
+              <!-- Content start -->
+              <div class="table-responsive">
+                {% render_table table %}
+              </div>
+              <!-- Content end -->
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /.content -->
+</div>
+  <!-- /.content-wrapper -->
+{% endblock %}

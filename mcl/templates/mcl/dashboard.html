@@ -1,0 +1,379 @@
+{% extends 'mcl/base.html' %} {% load static %}
+{% block title %}Dashboard{%endblock%}
+{% block content %}
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Dashboard</h1>
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="{% url 'mcl:dashboard' %}">Home</a></li>
+              <li class="breadcrumb-item active">Dashboard</li>
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <div class="content">
+      <div class="container">
+        
+        {% if messages %}
+          <div class="row">
+            <div class="col-md-12">
+              {% for message in messages %}
+              <div class="alert alert-{% if message.tags %}{{ message.tags }} {% endif %}" role="alert">
+                <p class="mb-0 text-center">{{ message }}</p>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+
+        {% if request.user.is_superuser or request.user.groups.all.0.name == 'Admin' %}
+        <!-- Dashboard Items for Superuser/Admin -->
+        <div class="row">
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-info">
+                    <div class="inner">
+                        <h3>{{ area_count }}</h3>
+                        <p>AREA</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <a href="{% url 'mcl:area_list' %}" class="small-box-footer">
+                        More info <i class="fas fa-arrow-circle-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-success">
+                    <div class="inner">
+                        <h3>{{ site_count }}</h3>
+                        <p>SITE</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-store"></i>
+                    </div>
+                    <a href="{% url 'mcl:site_list' %}" class="small-box-footer">
+                        More info <i class="fas fa-arrow-circle-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-warning">
+                    <div class="inner">
+                        <h3>{{ entry_count }}</h3>
+                        <p>ENTRY</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-file-signature"></i>
+                    </div>
+                    <a href="{% url 'mcl:entry_list' %}" class="small-box-footer">
+                        More info <i class="fas fa-arrow-circle-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-danger">
+                    <div class="inner">
+                        <h3>{{ user_count }}</h3>
+                        <p>USER</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <a href="{% url 'mcl:users_list' %}" class="small-box-footer">
+                        More info <i class="fas fa-arrow-circle-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <!-- Widget end for Superuser/Admin -->
+        {% else %}
+        <!-- Dashboard Item start for Normal User -->
+        <div class="row">
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-info">
+                    <div class="inner">
+                        <h3>{{ category_count }}</h3>
+                        <p>Questions Category</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-file-signature"></i>
+                    </div>
+                    <a href="{% url 'mcl:entry_otp_bn' %}" class="small-box-footer">
+                        New Entry <i class="fas fa-arrow-circle-right"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-danger">
+                    <div class="inner">
+                        <h3>{{ topic_count }}</h3>
+                        <!-- <p>Promotional Questions</p> -->
+                        <p>{{ category_name }}</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-file-signature"></i>
+                    </div>
+                    <a href="{% url 'mcl:entry_otp_promotion_bn' %}" class="small-box-footer">
+                        More info <i class="fas fa-arrow-circle-right"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-success">
+                    <div class="inner">
+                        <h3>{{ entry_count }}</h3>
+                        <p>Your Report</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-file-signature"></i>
+                    </div>
+                    <a href="{% url 'mcl:entry_list' %}" class="small-box-footer">
+                        More info <i class="fas fa-arrow-circle-right"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-warning">
+                    <div class="inner">
+                        <h3>{{ checkList_count }}</h3>
+                        <p>Resubmit Request List</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-file-signature"></i>
+                    </div>
+                    <a href="{% url 'mcl:entry_list' %}" class="small-box-footer">
+                        More info <i class="fas fa-arrow-circle-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <!-- Widget end for Normal User -->
+        {% endif %}
+        <div class="row">
+
+            {% if entryLineChartadmin %}
+            <section class="col-lg-6 connectedSortable ui-sortable">
+                <div class="card">
+                    <div class="card-header ui-sortable-handle bg-danger">
+                        <h3 class="card-title">
+                            <i class="fas fa-chart-line mr-1"></i>
+                            Entry List
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="entryLineChartadmin" width="400" height="205"></canvas>
+                    </div>
+                </div>
+            </section>
+            <!-- Admin end-->
+            {% endif %}
+
+            {%if entryChartDoughnutam %}
+            <section class="col-lg-6 connectedSortable ui-sortable">
+                <div class="card">
+                    <div class="card-header ui-sortable-handle bg-primary">
+                        <h3 class="card-title">
+                            <i class="fas fa-chart-pie mr-1"></i>
+                            District Wise
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                    <canvas id="entryChartDoughnutam" class="dash-donut-chart chartjs-render-monitor" width="487" height="250"></canvas>
+                    </div>
+                </div>
+            </section>
+            {% endif %}
+            
+            {%if entryLineChartam %}
+            <section class="col-lg-6 connectedSortable ui-sortable">
+                <div class="card">
+                    <div class="card-header ui-sortable-handle bg-primary">
+                        <h3 class="card-title">
+                            <i class="fas fa-chart-line mr-1"></i>
+                            Entry List
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                    <canvas id="entryLineChartam" width="400" height="205"></canvas>
+                    </div>
+                </div>
+            </section>
+            <!-- AM end-->
+            {% endif %}
+
+            {%if entryChartDoughnutdm %}
+            <section class="col-lg-6 connectedSortable ui-sortable">
+                <div class="card">
+                    <div class="card-header ui-sortable-handle bg-primary">
+                        <h3 class="card-title">
+                            <i class="fas fa-chart-pie mr-1"></i>
+                            Shop Wise
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                    <canvas id="entryChartDoughnutdm" class="dash-donut-chart chartjs-render-monitor" width="487" height="250"></canvas>
+                    </div>
+                </div>
+            </section>
+            {% endif %}
+            
+            {%if entryLineChartdm %}
+            <section class="col-lg-6 connectedSortable ui-sortable">
+                <div class="card">
+                    <div class="card-header ui-sortable-handle bg-primary">
+                        <h3 class="card-title">
+                            <i class="fas fa-chart-line mr-1"></i>
+                            Entry List
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                    <canvas id="entryLineChartdm" width="400" height="205"></canvas>
+                    </div>
+                </div>
+            </section>
+            <!-- DM end-->
+            {% endif %}
+        </div>
+      <!-- Graph end-->
+        <!-- Dashboard Item end-->
+      </div>
+    </div>
+    <!-- /.content -->
+</div>
+  <!-- /.content-wrapper -->
+{% endblock %}
+{% block extra_js %}
+<script src="{% static 'plugins/chart.js/Chart.min.js' %}"></script>
+<script>
+
+{% if entryLineChartadmin %}
+  //Admin Graph
+  const ctx_entryLineChartadmin = document.getElementById('entryLineChartadmin').getContext('2d');
+  const entryLineChartadmin = new Chart(ctx_entryLineChartadmin, {
+      type: 'line',
+      data: {
+          labels: [{% for data in entryLineChartadmin %} '{{ data.created_at__date|date:"d-m-Y" }}', {% endfor %}],
+          datasets: [{
+              label: 'Entry',
+              data: [{% for data in entryLineChartadmin %}{{ data.count}},{% endfor %}],
+              fill: true,
+              borderColor: 'rgb(75, 192, 192)',
+              tension: 0.1
+          }]
+      },
+      options: {
+          scales: {
+              y: {
+                  beginAtZero: true
+              }
+          }
+      }
+  });
+{% endif %}
+
+{% if entryChartDoughnutam %}
+    //AM Graph
+    const ctx_entryChartDoughnutam = document.getElementById('entryChartDoughnutam').getContext('2d');
+    const entryChartDoughnutam = new Chart(ctx_entryChartDoughnutam, {
+        type: 'doughnut',
+        data: {
+            labels: [{% for data in entryChartDoughnutam %} 'District - {{ data.site__district__code }}', {% endfor %}],
+            datasets: [{
+                label: 'Area',
+                data: [{% for data in entryChartDoughnutam %}{{ data.count }},{% endfor %}],
+                backgroundColor: [
+                'rgb(255, 99, 132)',
+                'rgb(54, 162, 235)',
+                'rgb(255, 205, 86)'
+                ]
+            }]
+        },
+    });
+{% endif %}
+
+{% if entryLineChartam %}
+  // AM Graph
+  const ctx_line_am = document.getElementById('entryLineChartam').getContext('2d');
+    const entryLineChartam = new Chart(ctx_line_am, {
+        type: 'line',
+        data: {
+            labels: [{% for data in entryLineChartam %} '{{ data.created_at__date|date:"d-m-Y" }}', {% endfor %}],
+            datasets: [{
+                label: 'Entry',
+                data: [{% for data in entryLineChartam %}{{ data.count }},{% endfor %}],
+                fill: true,
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+{% endif %}
+
+{% if entryChartDoughnutdm %}
+    //DM Graph
+    const ctx_entryChartDoughnutdm = document.getElementById('entryChartDoughnutdm').getContext('2d');
+    const entryChartDoughnutdm = new Chart(ctx_entryChartDoughnutdm, {
+        type: 'doughnut',
+        data: {
+            labels: [{% for data in entryChartDoughnutdm %} '{{ data.site__code }}', {% endfor %}],
+            datasets: [{
+                label: 'Area',
+                data: [{% for data in entryChartDoughnutdm %}{{ data.count }},{% endfor %}],
+                backgroundColor: [
+                'rgb(255, 99, 132)',
+                'rgb(54, 162, 235)',
+                'rgb(255, 205, 86)'
+                ]
+            }]
+        },
+    });
+{% endif %}
+
+{% if entryLineChartdm %}
+  // Site Graph
+  const ctx_line_dm = document.getElementById('entryLineChartdm').getContext('2d');
+    const entryLineChartdm = new Chart(ctx_line_dm, {
+        type: 'line',
+        data: {
+            labels: [{% for data in entryLineChartdm %} '{{ data.created_at__date|date:"d-m-Y" }}', {% endfor %}],
+            datasets: [{
+                label: 'Entry',
+                data: [{% for data in entryLineChartdm %}{{ data.count }},{% endfor %}],
+                fill: true,
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+{% endif %}
+</script>
+{% endblock %}

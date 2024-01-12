@@ -1,0 +1,309 @@
+{% extends 'mcl/base.html' %}{% load static %}
+{% block title %}Report{%endblock%}
+{% block content %}
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h4 class="m-0">Search by Date Range</h4>
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="{% url 'mcl:dashboard' %}">Home</a></li>
+              <li class="breadcrumb-item active">Report</li>
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <div class="content">
+      <div class="container">
+        <div class="row mb-2">
+          <div class="col-12 card">
+            <div class="card-header">
+              <h1 class="card-title">Filter</h1>
+                <button class="btn btn-sm btn-danger ml-2 font-weight-bold" onClick="window.location.reload(true);" title="Click here to Reload the Page.">
+                  Reset
+                </button>             
+            </div>
+            <div class="card-body">
+              <div class="col-md-12">
+
+                {% if messages %}
+                <div class="row">
+                  <div class="col-md-12">
+                    {% for message in messages %}
+                    <div class="alert alert-{% if message.tags %}{{ message.tags }} {% endif %}" role="alert">
+                      <p class="mb-0 text-center">{{ message }}</p>
+                    </div>
+                    {% endfor %}
+                  </div>
+                </div>
+                {% endif %}
+              <!-- Content start -->
+              
+              <form action="{% url 'mcl:report_result' %}" method="POST" id="form-filter">
+                {% csrf_token %}
+              <div class="row">
+                <div class="col-1">
+                  <label>Date:</label>
+                </div>
+                
+                <div class="col-3">
+                  <input type="date" name="from_date" class="form-control" placeholder="From Date" required>
+                </div>
+
+                <div class="col-3">
+                  <input type="date" name="to_date" class="form-control" placeholder="To Date" required>
+                </div>
+
+                <div class="col-2">
+                    <label>Report Name:</label>
+                </div>
+                <div class="col-3">
+                    <div class="form-group">
+                        <select class="form-control" name="option" required>
+                          <!-- <option value="sum_rep">Choose a Report</option> -->
+                          <option value="tot_sum_rep">Total Summary Report</option>
+                          <option value="area_sub_rep">Area Submission Report</option>
+                          <option value="dist_sub_rep">District Submission Report</option>
+                          <option value="checklist_entry_images">Checklist Entry Images</option>
+                        </select>
+                    </div>
+                </div>
+              </div>
+
+              <div class="row mt-3">
+
+                <!-- For areas -->
+                <div class="col-1">
+                    <label>Area: </label>
+                </div>
+                <div class="col-3">
+                    <div class="form-group">
+                        <select multiple="multiple" class="form-control" name="areas" id="area_codes">
+                            {% for area in areas %}
+                            <option value="{{ area }}">{{ area }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <!-- For districts -->
+                <div class="col-1">
+                    <label>District: </label>
+                </div>
+                <div class="col-3">
+                    <div class="form-group">
+                        <select multiple="multiple" class="form-control" name="districts" id="district_codes">
+                            {% for district in districts %}
+                            <option value="{{ district }}">{{ district }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <!-- For shops -->
+                <div class="col-1">
+                    <label>Site: </label>
+                </div>
+                <div class="col-3">
+                    <div class="form-group">
+                        <select multiple="multiple" class="form-control" name="shops" id="shop_codes">
+                            {% for shop in shops %}
+                            <option value="{{ shop }}">{{ shop }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+              </div>
+              <div class="button text-center">
+                <button class="btn btn-danger text-bold" id="form-submit">Search</button>
+                <h4 class="mt-2 text-danger d-none" id="submit-msg"><i class="fas fa-cog fa-spin"></i> Please wait generating report...</h4>
+              </div>
+            </form>
+              <!-- Content end -->
+              </div>
+            </div>
+
+
+            <!-- New Content -->
+            <div class="content">
+              <div class="container">
+                <div class="row mb-2">
+                  <div class="col-12 card">
+                    <div class="card-body">
+                      <div class="col-md-12">
+                        <div class="card-header">
+                          <h1 class="card-title"><strong>MCL Report</strong></h1> 
+                        </div>
+                          {% if messages %}
+                          <div class="row">
+                            <div class="col-md-12">
+                              {% for message in messages %}
+                              <div class="alert alert-{% if message.tags %}{{ message.tags }} {% endif %}" role="alert">
+                                <p class="mb-0 text-center">{{ message }}</p>
+                              </div>
+                              {% endfor %}
+                            </div>
+                          </div>
+                          {% endif %}
+                        <!-- Content start -->
+                        <br>
+                        
+                        <article>
+                          <!-- <h1>MCL Report</h1> -->
+                          <dl>
+                            <!-- <dt><i class="fas fa-cog fa-spin"></i> Entry Report   
+                              <button class="btn btn-sm btn-outline-info ml-2 font-weight-bold"
+                                      id="csvTablebtn"
+                                      data-toggle="modal"
+                                      data-target="#view-report-modal-xl"
+                                      data-raw-res="{{ raw_res | safe }}"
+                                      title="View Report">
+                                  <i class="fas fa-th"></i> Preview
+                              </button>
+                            </dt>
+                            <dd>(View All the Checklist Entry)</dd> -->
+                            
+                            <!-- <dt><i class="fas fa-circle-notch fa-spin"></i> District Report 
+                            <dt><i class="fas fa-stroopwafel fa-spin"></i> Shop Report 
+                            <dt><i class="fas fa-sync fa-spin"></i> Shop Report   
+                            <dt><i class="fas fa-spinner fa-spin"></i> Area Report    -->
+
+                            <dt>
+                              <i class="fas fa-cog fa-spin"></i> 
+                              Current Month Checklist Entry Report  
+                              <button class="btn btn-sm btn-outline-info ml-2 font-weight-bold"
+                                      id="entry_report"
+                                      title="Download Checklist Entry Images">
+                                  <i class="fas fa-th"></i> 
+                                  <!-- <a href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}/media/reports/{{ csv_file }}" download>
+                                    Download
+                                  </a> -->
+                                  <a href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}{{ cur_csv_file }}" download>
+                                    Download
+                                </a>
+                              </button>
+                            </dt>
+                            <dd>(Download All the Checklist Entry for the current month)</dd>
+
+                            <dt>
+                              <i class="fas fa-cog fa-spin"></i> 
+                              Last Month Checklist Entry Report  
+                              <button class="btn btn-sm btn-outline-info ml-2 font-weight-bold"
+                                      id="entry_report"
+                                      title="Download Checklist Entry Images">
+                                  <i class="fas fa-th"></i> 
+                                  <!-- <a href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}/media/reports/{{ csv_file }}" download>
+                                    Download
+                                  </a> -->
+                                  <a href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}{{ last_csv_file }}" download>
+                                    Download
+                                </a>
+                              </button>
+                            </dt>
+                            <dd>(Download All the Checklist Entry for the last month)</dd>
+
+                          </dl>
+
+                          <!-- View Report -->
+                          <div class="modal fade" id="view-report-modal-xl" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-xl" role="document">
+                              <div class="modal-content table-responsive">
+                                <div class="modal-header">
+                                    <button class="btn btn-md btn-success ml-2 font-weight-bold" onClick="window.location.href = '{{ request.scheme }}://{{ request.META.HTTP_HOST }}{{ csv_file }}';" title="Download CSV">
+                                      <i class="fas fa-download"></i> Download CSV
+                                    </button>
+                                  <button type="button" class="close text-danger" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                  </button>
+                                </div>
+                                <div class="table table-hover table-bordered table-sm text-xs" id="CSVTable"></div>
+                              </div>
+                            </div>
+                          </div>
+                          <!-- View Report end -->
+
+                        </article>
+                        
+                        <!-- Content end -->
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- New Content End -->
+
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /.content -->
+</div>
+  <!-- /.content-wrapper -->
+{% endblock %}
+{% block extra_js %}
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#area_codes').multiselect({
+      maxHeight: 200,
+      buttonWidth: '100%',
+      includeSelectAllOption: true,
+      enableFiltering: true,
+      enableCaseInsensitiveFiltering: true
+    });
+
+    $('#district_codes').multiselect({
+      maxHeight: 200,
+      buttonWidth: '100%',
+      includeSelectAllOption: true,
+      enableFiltering: true,
+      enableCaseInsensitiveFiltering: true
+    });
+
+    $('#shop_codes').multiselect({
+      maxHeight: 200,
+      buttonWidth: '100%',
+      includeSelectAllOption: true,
+      enableFiltering: true,
+      enableCaseInsensitiveFiltering: true
+    });
+
+    $("#form-filter").submit(function (e) {
+      $("#submit-msg").removeClass("d-none");
+      $("#form-submit").addClass("disabled");
+    });  
+});
+</script>
+<script>
+  $(document).ready(function () {
+      $("#form-submit").click(function (e) {
+          var selectedOption = $("select[name='option']").val();
+  
+          if (selectedOption === "checklist_entry_images") {
+            $("#submit-msg").removeClass("d-none");
+
+            setTimeout(function () {
+                $("#submit-msg").addClass("d-none");
+            }, 10000);
+          }
+      });
+  });
+</script>
+<script>
+  $("#csvTablebtn").click(function(){
+    $('#CSVTable').CSVToTable('{{ request.scheme }}://{{ request.META.HTTP_HOST }}{{ csv_file }}');
+    $("#CSVTable").focus();
+  });
+  </script>
+
+<script src="{% static 'js/bootstrap-multiselect.min.js' %}"></script>
+{% endblock %}
