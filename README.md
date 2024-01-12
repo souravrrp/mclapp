@@ -1,14 +1,14 @@
 ## Project Title
 
-DJango Boilerplate
+Merchandising Audit System
 
 ## Project Overview
 
-DJango Boilerplate
+Merchandising Audit System (MAS) is a web view app simple called MCL APP.
 
 ## End User
 
-- Developer Department
+- Branch Manager
 
 ## Version No
 
